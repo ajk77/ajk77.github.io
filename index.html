@@ -4,243 +4,257 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Andrew J. King, PhD</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        /* Gradient Background */
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
+            background: #1e3c72;
+            color: white; /* Ensures text is readable */
         }
-        h1, h2, h3 {
-            color: #333;
-        }
-        a {
-            color: #0066cc;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-		table {
-		  font-family: arial, sans-serif;
-		  border-collapse: collapse;
-		  width: 100%;
-		}
-		td, th {
-		  border: 1px solid #dddddd;
-		  text-align: left;
-		  padding: 8px;
-		}
-		tr:nth-child(even) {
-		  background-color: #dddddd;
-		}
-		p {
-			margin: 0;
-		}
 
+        h1, h2, h3, p {
+            color: white;
+        }
+
+        a {
+            color: white;
+        }
+
+        a:hover {
+            color: #ffc107;
+        }
+        /* Styling for the table */
+        .custom-table {
+            color: white; /* White text for the entire table */
+        }
+
+        .custom-table th, .custom-table td {
+            border-color: #fff; /* White border */
+        }
+
+        .custom-table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.1); /* Subtle stripe effect */
+        }
+
+        .custom-table-striped tbody tr:nth-of-type(even) {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Andrew J. King, PhD</h1>
-		<img src="img/King_Andy_306-4-small.jpg" alt="Andrew-king-headshot" width="300">
-		<p>Assistant Professor</p>
-		<p>University of Pittsburgh School of Medicine</p>
-		<p>Depts. of Critical Care Medicine & Biomedical Informatics</p>
-		<p>ajk77@pitt.edu | ajk77.github.io | <a href="https://twitter.com/ajk77onX" target="_blank">@ajk77onX</a></p>
-		<h2>Links</h2> 
-		<p> 
-			<a href="doc/AndrewJKing_CV_2024Oct13.pdf" target="_blank">Curriculum Vita</a> |
-			<a href="https://scholar.google.com/citations?user=uR9TO14AAAAJ" target="_blank">Google Scholar</a> |
-			<a href="https://www.ccm.pitt.edu/people/andrew-j-king-phd" target="_blank">CCM Profile</a> |
-			<a href="https://www.dbmi.pitt.edu/directory/name/andrew-king/" target="_blank">DBMI Profile</a> |	
-			<a href="http://www.linkedin.com/in/andrewjking-phd" target="_blank">LinkedIn</a> 
-		</p>
-    </header>
+    <div class="container mt-4">
+        <header class="text-center">
+            <h1>Andrew J. King, PhD</h1>
+            <img src="img/King_Andy_306-4-small.jpg" alt="Andrew King headshot" class="img-fluid rounded" width="300">
+            <p class="lead">Assistant Professor<br>
+            University of Pittsburgh School of Medicine<br>
+            Departments of Critical Care Medicine & Biomedical Informatics<br>
+			andrew.king@pitt.edu
+        </header>
 
-    <section>
-        <h2>Bio</h2>
-			<p>As an Assistant Professor in the Departments of Critical Care Medicine and Biomedical Informatics at the University of Pittsburgh, my research focuses on the people, processes, and technology within the Intensive Care Unit. I design, implement, and evaluate clinical decision support systems that increase evidence adoption, enhance care team performance, and improve clinician well-being. I also develop learning health system infrastructure that facilitates case reporting for clinical trials and high-resolution measurment of care quality and team workflow.
-			</p>
-    </section>
+        <section class="mt-5">
+            <h2>Links</h2>
+            <p>
+                <a href="doc/AndrewJKing_CV_2024Oct13.pdf" class="btn btn-light" target="_blank">Curriculum Vita</a>
+                <a href="https://scholar.google.com/citations?user=uR9TO14AAAAJ" class="btn btn-light" target="_blank">Google Scholar</a>
+                <a href="https://www.ccm.pitt.edu/people/andrew-j-king-phd" class="btn btn-light" target="_blank">CCM Profile</a>
+                <a href="https://www.dbmi.pitt.edu/directory/name/andrew-king/" class="btn btn-light" target="_blank">DBMI Profile</a>
+                <a href="http://www.linkedin.com/in/andrewjking-phd" class="btn btn-light" target="_blank">LinkedIn</a>
+				<a href="https://twitter.com/ajk77onX" class="btn btn-light" target="_blank">@ajk77onX</a>
+            </p>
+        </section>
 
-	<section>
-		<h2>Updates</h2>
+        <section class="mt-5">
+            <h2>Bio</h2>
+            <p>As an Assistant Professor in the Departments of Critical Care Medicine and Biomedical Informatics at the University of Pittsburgh, my research focuses on the people, processes, and technology within the Intensive Care Unit. I design, implement, and evaluate clinical decision support systems that increase evidence adoption, enhance care team performance, and improve clinician well-being. I also develop learning health system infrastructure that facilitates case reporting for clinical trials and high-resolution measurement of care quality and team workflow.</p>
+        </section>
 
-		<table>
-		  <tr>
-			<th>Date</th>
-			<th>Details</th>
-			<th>Links</th>
-		  </tr>
-		  <tr>
-			<td>2024 May</td>
-			<td><b>1st Author Publication</b> AMIA Informatics Summits</td>
-			<td><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11141839/">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2024 May</td>
-			<td><b>Co-Author Publication</b> CHI Conference on Human Factors in Computing Systems</td>
-			<td><a href="https://dl.acm.org/doi/fullHtml/10.1145/3613904.3641896">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2023 Nov</td>
-			<td><b>1st Author Publication</b> Intelligence-Based Medicine</td>
-			<td><a href="https://www.sciencedirect.com/science/article/pii/S2666521223000297">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2023 Oct</td>
-			<td><b>1st Author Publication</b> Journal of Biomedical Informatics</td>
-			<td><a href="https://www.sciencedirect.com/science/article/abs/pii/S1532046423002046">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2023 Oct</td>
-			<td><b>1st Author Publication</b> Critical Care Clinics</td>
-			<td><a href="https://www.criticalcare.theclinics.com/article/S0749-0704(23)00018-0/fulltext">paper</a></td>
-		  </tr>  
-		  <tr>
-			<td>2023 Oct</td>
-			<td><b>Co-author Publication</b> Critical Care Clinics</td>
-			<td><a href="https://www.criticalcare.theclinics.com/article/S0749-0704(23)00010-6/fulltext">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2023 Mar</td>
-			<td><b>1st Author Publication</b> American Journal of Critical Care</td>
-			<td><a href="https://aacnjournals.org/ajcconline/article-abstract/32/2/92/31985/Measuring-Performance-on-the-ABCDEF-Bundle-During">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2022 Nov</td>
-			<td><b>Co-author Book Chapter</b> Intelligent Systems in Medicine and Health: The Role of AI</td>
-			<td><a href="https://link.springer.com/chapter/10.1007/978-3-031-09108-7_10">chapter</a></td>
-		  </tr>
-		  <tr>
-			<td>2022 Oct</td>
-			<td><b>Co-author Publication</b> JAMIA Open</td>
-			<td><a href="https://academic.oup.com/jamiaopen/article/5/4/ooac077/6759783">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2022 Aug</td>
-			<td><b>1st Author Publication</b> ATS Scholar</td>
-			<td><a href="https://www.atsjournals.org/doi/full/10.34197/ats-scholar.2022-0010OC">paper</a></td>	
-		  </tr>
-		  <tr>
-			<td>2022 Apr</td>
-			<td><b>Co-author Publication</b> Nature Digital Medicine</td>
-			<td><a href="https://www.nature.com/articles/s41746-022-00580-2">paper</a></td>	
-		  </tr>
-		  <tr>
-			<td>2022 Jan</td>
-			<td><b>Faculty Appointment</b> Assistant Professor of Critical Care Medicine</td>
-			<td><a href="https://www.ccm.pitt.edu/people/andrew-j-king-phd">website</a></td>
-		  </tr>
-		  <tr>
-			<td>2021 Aug</td>
-			<td><b>Co-author Publication</b> New England Journal of Medicine</td>
-			<td><a href="https://www.nejm.org/doi/full/10.1056/NEJMoa2105911">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2021 Aug</td>
-			<td><b>Co-author Publication</b> New England Journal of Medicine</td>
-			<td><a href="https://www.nejm.org/doi/full/10.1056/NEJMoa2103417">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2021 Aug</td>
-			<td><b>Co-author Publication</b> JAMIA Open</td>
-			<td><a href="https://academic.oup.com/jamiaopen/article/4/3/ooab059/6334275">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2021 Aug</td>
-			<td><b>Co-author Publication</b> Intensive Care Medicine</td>
-			<td><a href="https://link.springer.com/article/10.1007/s00134-021-06448-5">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2021 Jul</td>
-			<td><b>1st Author Publication</b> JAMIA Open</td>
-			<td><a href="https://academic.oup.com/jamiaopen/article/4/3/ooab040/6332673">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2021 Jan</td>
-			<td><b>Co-author Publication</b> Trials</td>
-			<td><a href="https://link.springer.com/article/10.1186/s13063-020-04997-6">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2020 Dec</td>
-			<td><b>Co-author Publication</b> JAMIA Open</td>
-			<td><a href="https://academic.oup.com/jamiaopen/article/3/4/602/6056383">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2020 Aug</td>
-			<td><b>Grant Award (as PI)</b> $300k from Pittsburgh Health Data Alliance</td>
-			<td><a href="https://healthdataalliance.com/blog/project-spotlight-aviva/">blog</a>, <a href="https://healthdataalliance.com/blog/project-spotlight-aviva-update/">blog</a></td>
-		  </tr>
-		  <tr>
-			<td>2020 Apr</td>
-			<td><b>1st Author Publication</b> Journal of Medical Internet Research</td>
-			<td><a href="https://www.jmir.org/2020/4/e15876/">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2019 Dec</td>
-			<td><b>1st Author Publication</b> Journal of Biomedical Informatics</td>
-			<td><a href="https://www.sciencedirect.com/science/article/pii/S1532046419302461">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2019 Jul</td>
-			<td><b>Grant Award (as PI)</b> Loan Repayment Program from AHRQ</td>
-			<td></td>
-		  </tr>
-		  <tr>
-			<td>2019 Jun</td>
-			<td><b>Award</b> Best Focus Talk at NLM Informatics Training Conference</td>
-			<td></td>
-		  </tr>
-		  <tr>
-			<td>2018 Nov</td>
-			<td><b>Award</b> Distinguished Paper Nomination at AMIA Annual Symposium</td>
-			<td><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6371238/">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2018 Oct</td>
-			<td><b>Postdoc Appointment</b> Fellow in Critical Care Informatics</td>
-			<td></td>
-		  </tr>
-		  <tr>
-			<td>2018 Sept</td>
-			<td><b>Education</b> PhD in Biomedical Informatics</td>
-			<td><a href="https://d-scholarship.pitt.edu/35223/">dissertation</a></td>
-		  </tr>
-		  <tr>
-			<td>2017 Summer</td>
-			<td><b>Internship</b> Health Innovators Fellow, Jewish Healthcare Foundation</td>
-			<td></td>
-		  </tr>
-		  <tr>
-			<td>2017 Mar</td>
-			<td><b>Award</b> 1st Place in the Student Paper Competition at AMIA Informatics Summits</td>
-			<td><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5543363/">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2015 Nov</td>
-			<td><b>Award</b> Martin Epstein Award and 1st Place in the Student Paper Competition at AMIA Annual Symposium</td>
-			<td><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4765593/">paper</a></td>
-		  </tr>
-		  <tr>
-			<td>2015 Summer</td>
-			<td><b>Internship</b> Center for Health Informatics for the Underserved (Malawi, Africa)</td>
-			<td></td>
-		  </tr>
-		  <tr>
-			<td>2015 Mar</td>
-			<td><b>Education</b> MS in Biomedical Informatics</td>
-			<td></td>
-		  </tr>
-		  <tr>
-			<td>2013 Mar</td>
-			<td><b>Education</b> BS in Bioinformatics</td>
-			<td><a href="https://www.biology.pitt.edu/person/andrew-king" target="_blank">profile</a></td>
-		  </tr>
-		</table>
-	</section>
+        <section class="mt-5">
+            <h2>Updates</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered custom-table custom-table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Date</th>
+                            <th>Details</th>
+                            <th>Links</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024 May</td>
+                            <td><strong>1st Author Publication</strong> AMIA Informatics Summits</td>
+                            <td><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11141839/" target="_blank">paper</a></td>
+                        </tr>
+                        <tr>
+                            <td>2024 May</td>
+                            <td><strong>Co-Author Publication</strong> CHI Conference on Human Factors in Computing Systems</td>
+                            <td><a href="https://dl.acm.org/doi/fullHtml/10.1145/3613904.3641896" target="_blank">paper</a></td>
+                        </tr>
+						<tr>
+							<td>2023 Nov</td>
+							<td><strong>1st Author Publication</strong> Intelligence-Based Medicine</td>
+							<td><a href="https://www.sciencedirect.com/science/article/pii/S2666521223000297" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2023 Oct</td>
+							<td><strong>1st Author Publication</strong> Journal of Biomedical Informatics</td>
+							<td><a href="https://www.sciencedirect.com/science/article/abs/pii/S1532046423002046" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2023 Oct</td>
+							<td><strong>1st Author Publication</strong> Critical Care Clinics</td>
+							<td><a href="https://www.criticalcare.theclinics.com/article/S0749-0704(23)00018-0/fulltext" target="_blank">paper</a></td>
+						  </tr>  
+						  <tr>
+							<td>2023 Oct</td>
+							<td><strong>Co-author Publication</strong> Critical Care Clinics</td>
+							<td><a href="https://www.criticalcare.theclinics.com/article/S0749-0704(23)00010-6/fulltext" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2023 Mar</td>
+							<td><strong>1st Author Publication</strong> American Journal of Critical Care</td>
+							<td><a href="https://aacnjournals.org/ajcconline/article-abstract/32/2/92/31985/Measuring-Performance-on-the-ABCDEF-Bundle-During" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2022 Nov</td>
+							<td><strong>Co-author Book Chapter</strong> Intelligent Systems in Medicine and Health: The Role of AI</td>
+							<td><a href="https://link.springer.com/chapter/10.1007/978-3-031-09108-7_10" target="_blank">chapter</a></td>
+						  </tr>
+						  <tr>
+							<td>2022 Oct</td>
+							<td><strong>Co-author Publication</strong> JAMIA Open</td>
+							<td><a href="https://academic.oup.com/jamiaopen/article/5/4/ooac077/6759783" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2022 Aug</td>
+							<td><strong>1st Author Publication</strong> ATS Scholar</td>
+							<td><a href="https://www.atsjournals.org/doi/full/10.34197/ats-scholar.2022-0010OC" target="_blank">paper</a></td>	
+						  </tr>
+						  <tr>
+							<td>2022 Apr</td>
+							<td><strong>Co-author Publication</strong> Nature Digital Medicine</td>
+							<td><a href="https://www.nature.com/articles/s41746-022-00580-2" target="_blank">paper</a></td>	
+						  </tr>
+						  <tr>
+							<td>2022 Jan</td>
+							<td><strong>Faculty Appointment</strong> Assistant Professor of Critical Care Medicine</td>
+							<td><a href="https://www.ccm.pitt.edu/people/andrew-j-king-phd" target="_blank">website</a></td>
+						  </tr>
+						  <tr>
+							<td>2021 Aug</td>
+							<td><strong>Co-author Publication</strong> New England Journal of Medicine</td>
+							<td><a href="https://www.nejm.org/doi/full/10.1056/NEJMoa2105911" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2021 Aug</td>
+							<td><strong>Co-author Publication</strong> New England Journal of Medicine</td>
+							<td><a href="https://www.nejm.org/doi/full/10.1056/NEJMoa2103417" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2021 Aug</td>
+							<td><strong>Co-author Publication</strong> JAMIA Open</td>
+							<td><a href="https://academic.oup.com/jamiaopen/article/4/3/ooab059/6334275" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2021 Aug</td>
+							<td><strong>Co-author Publication</strong> Intensive Care Medicine</td>
+							<td><a href="https://link.springer.com/article/10.1007/s00134-021-06448-5" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2021 Jul</td>
+							<td><strong>1st Author Publication</strong> JAMIA Open</td>
+							<td><a href="https://academic.oup.com/jamiaopen/article/4/3/ooab040/6332673" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2021 Jan</td>
+							<td><strong>Co-author Publication</strong> Trials</td>
+							<td><a href="https://link.springer.com/article/10.1186/s13063-020-04997-6" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2020 Dec</td>
+							<td><strong>Co-author Publication</strong> JAMIA Open</td>
+							<td><a href="https://academic.oup.com/jamiaopen/article/3/4/602/6056383" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2020 Aug</td>
+							<td><strong>Grant Award (as PI)</strong> $300k from Pittsburgh Health Data Alliance</td>
+							<td><a href="https://healthdataalliance.com/blog/project-spotlight-aviva/" target="_blank">blog</a>, <a href="https://healthdataalliance.com/blog/project-spotlight-aviva-update/" target="_blank">blog</a></td>
+						  </tr>
+						  <tr>
+							<td>2020 Apr</td>
+							<td><strong>1st Author Publication</strong> Journal of Medical Internet Research</td>
+							<td><a href="https://www.jmir.org/2020/4/e15876/" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2019 Dec</td>
+							<td><strong>1st Author Publication</strong> Journal of Biomedical Informatics</td>
+							<td><a href="https://www.sciencedirect.com/science/article/pii/S1532046419302461" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2019 Jul</td>
+							<td><strong>Grant Award (as PI)</strong> Loan Repayment Program from AHRQ</td>
+							<td></td>
+						  </tr>
+						  <tr>
+							<td>2019 Jun</td>
+							<td><strong>Award</strong> Best Focus Talk at NLM Informatics Training Conference</td>
+							<td></td>
+						  </tr>
+						  <tr>
+							<td>2018 Nov</td>
+							<td><strong>Award</strong> Distinguished Paper Nomination at AMIA Annual Symposium</td>
+							<td><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6371238/" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2018 Oct</td>
+							<td><strong>Postdoc Appointment</strong> Fellow in Critical Care Informatics</td>
+							<td></td>
+						  </tr>
+						  <tr>
+							<td>2018 Sept</td>
+							<td><strong>Education</strong> PhD in Biomedical Informatics</td>
+							<td><a href="https://d-scholarship.pitt.edu/35223/" target="_blank">dissertation</a></td>
+						  </tr>
+						  <tr>
+							<td>2017 Summer</td>
+							<td><strong>Internship</strong> Health Innovators Fellow, Jewish Healthcare Foundation</td>
+							<td></td>
+						  </tr>
+						  <tr>
+							<td>2017 Mar</td>
+							<td><strong>Award</strong> 1st Place in the Student Paper Competition at AMIA Informatics Summits</td>
+							<td><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5543363/" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2015 Nov</td>
+							<td><strong>Award</strong> Martin Epstein Award and 1st Place in the Student Paper Competition at AMIA Annual Symposium</td>
+							<td><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4765593/" target="_blank">paper</a></td>
+						  </tr>
+						  <tr>
+							<td>2015 Summer</td>
+							<td><strong>Internship</strong> Center for Health Informatics for the Underserved (Malawi, Africa)</td>
+							<td></td>
+						  </tr>
+						  <tr>
+							<td>2015 Mar</td>
+							<td><strong>Education</strong> MS in Biomedical Informatics</td>
+							<td></td>
+						  </tr>
+						  <tr>
+							<td>2013 Mar</td>
+							<td><strong>Education</strong> BS in Bioinformatics</td>
+							<td><a href="https://www.biology.pitt.edu/person/andrew-king" target="_blank">profile</a></td>
+						  </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
 
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
