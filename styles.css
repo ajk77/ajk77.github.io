@@ -1,0 +1,78 @@
+/* Reset and styling */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Background */
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #1e3a8a, #3b82f6);
+    z-index: -1;
+}
+
+/* Glass effect */
+.content {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+/* Styling for sections */
+section {
+    margin-bottom: 3rem;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #fff;
+}
+
+h1, h2, h3, p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    text-align: justify;
+}
+
+footer {
+    text-align: center;
+    margin-top: 3rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+
+a {
+	color: white;
+}
+
+a:hover {
+	color: #ffc107;
+}
+/* Styling for the table */
+.custom-table {
+	color: white; /* White text for the entire table */
+}
+
+.custom-table th, .custom-table td {
+	border-color: #fff; /* White border */
+}
+
+.custom-table-striped tbody tr:nth-of-type(odd) {
+	background-color: rgba(255, 255, 255, 0.1); /* Subtle stripe effect */
+}
+
+.custom-table-striped tbody tr:nth-of-type(even) {
+	background-color: rgba(255, 255, 255, 0.2);
+}
