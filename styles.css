@@ -35,15 +35,10 @@ section {
     margin-bottom: 3rem;
 }
 
-h1, h2 {
-    text-align: center;
-    color: #fff;
-}
-
 h1, h2, h3, p {
     color: rgba(255, 255, 255, 0.8);
     line-height: 1.5;
-    text-align: justify;
+    text-align: left;
 }
 
 footer {
