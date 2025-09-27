@@ -70,18 +70,26 @@ This SOP is based on guidance from the Pitt CRC Bioinformatics documentation ([h
     conda create --prefix=/path/to/your/env python=3.11
     source activate /path/to/your/env
     pip install ollama pymysql pydantic
-    source deactivate
+    conda deactivate
     ```
 
   * Ollama Singularity image: `/software/rhel9/manual/install/ollama/ollama-0.11.10.sif`
 
-* **Database Access**: Obtain credentials for MySQL.
+* **Database Access**: Obtain credentials for MySQL. Create a file called '.env' and save it to your CRCD home directory (/ihome/project_name/user_name/.env). The file should contain the following:
+
+	```
+	DB_USER=myuser
+	DB_PASS=mypassword
+	DB_HOST=db.example.edu
+	DB_NAME=sspSB
+    ```
+- To restrict others from reading the file use `chmod 600 .env`	
 
 * **Table Creation**: Create or confirm a results table (see Section 3.5).
 
 ### Per-Experiment Setup
 
-* Choose an appropriate model (`llama3` vs. `llama3:70b`).
+* Choose an appropriate model (`llama3`, `llama3:70b`, etc.).
 * Submit GPU job to launch Ollama server (see Section 3.1).
 * Pull the required model if not already available.
 
@@ -99,39 +107,67 @@ This SOP is based on guidance from the Pitt CRC Bioinformatics documentation ([h
 2. Query the job to get the hostname and port:
    ```
    squeue -M gpu -u $USER
-   # Example output: JOBID 1230450, NODE gpu-n57
+   # Example output (with $USER replaced with ajk77): 
+   # CLUSTER: gpu
+   # 		JOBID 	PARTITION     NAME     USER ST    TIME  NODES NODELIST(REASON)
+   #		1230409      l40s ollama_0    ajk77  R    0:31      1 gpu-n55
    squeue -M gpu --me --name=ollama_0.11.10_server_job --states=R -h -O NodeList,Comment
-   # Example output: gpu-n57 48362 (hostname:port)
+   # Example output (hostname:port): 
+   # gpu-n57 48362
    ```
 
 3. Note the server URL: `http://<hostname>:<port>` (e.g., `http://gpu-n57:48362`).
 
-4. (Optional) Pull a model if not already available:
-   - Request an interactive SMP session: `srun -M smp -p smp -n4 --mem=16G -t0-04:00:00 --pty bash`
+4. (Required first time) Pull desired models:
+   - Request an interactive SMP session: `srun -M smp -p smp -n4 --mem=16G -t0-01:00:00 --pty bash`
    - In the session:
      ```
      module load singularity/4.3.2
      singularity shell /software/rhel9/manual/install/ollama/ollama-0.11.10.sif
      export OLLAMA_HOST=<hostname>:<port>  # e.g., gpu-n57:48362
      ollama pull llama3
+	 
+	 # Additional helpful commands:
+	 # (1) To list downloaded models:
+     ollama list
+	 # (2) To directly interact with a model:
+	 ollama run llama3
+	 # (3) To exit interaction
+	 /bye
+	 # (4) To exist singularity shell 
+	 exit
      ```
+
+**Note on Models**:
+* This example uses llama3 as the model. A full list of models avaliable within CRCD's current singularity image is provided here:  https://github.com/ollama/ollama/tree/v0.11.10?tab=readme-ov-file#model-library
+* Model install will fail if you exceed your 75GB allowance in ~/.ollama
+* To remove a model use 'ollama rm model_name'
 
 ### 3.2. Connect to the Database and Fetch Notes
 Use `pymysql` to connect and fetch notes in batches to handle large datasets efficiently.
 
 ```python
+from dotenv import load_dotenv
 import pymysql
 import ollama
+import os
 from pydantic import BaseModel, ValidationError
 import json
 from typing import List
 
-# Database connection function (from notebook example)
+load_dotenv('/ihome/project_name/user_name/.env')  ## Update with path from Section 2.)
+
+DB_USER = os.getenv("DB_USER")
+DB_PASS = os.getenv("DB_PASS")
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+
+# Database connection function 
 def db_connect():
-    db_host = "auview.ccm.pitt.edu"
-    db_user = "your_username"  # Replace with your credentials
-    db_password = "your_password"
-    db_name = "sspSB"
+    db_host = DB_HOST
+    db_user = DB_USER
+    db_password = DB_PASS
+    db_name = DB_NAME
     conn = pymysql.connect(host=db_host, user=db_user, password=db_password, 
                            database=db_name, port=3306, local_infile=1)
     return conn
@@ -158,7 +194,7 @@ Use Pydantic to enforce a schema for LLM responses, ensuring consistency and val
 ```python
 # Pydantic model for structured output
 class LLMResponse(BaseModel):
-    response: str  # e.g., '(1) Likely', '(2) Unlikely', or '(3) Unable to say'
+    response:  Literal["(1) Likely", "(2) Unlikely", "(3) Unable to say"]
     explanation: str  # Concise explanation
 ```
 
@@ -172,39 +208,57 @@ Connect to the Ollama server and process each note. Use a system prompt for cons
 OLLAMA_HOST = 'http://gpu-n57:48362'  # Replace with your hostname:port
 client = ollama.Client(host=OLLAMA_HOST)
 
+# Unique name for this experiment (stored in meta column of result database)
+EXP_NAME = 'questionsPNAv1.1 on 2025-09-24'
+
+# Model selection
+MODEL = "llama3"
+
 # System prompt for consistent behavior
 SYSTEM_PROMPT = """
 You are a medical analysis assistant. Analyze the note for pneumonia diagnosis.
-Answer strictly as '(1) Likely', '(2) Unlikely', or '(3) Unable to say because of lack of information'.
+Answer strictly as '(1) Likely', '(2) Unlikely', or '(3) Unable to say'.
 Provide a concise explanation. Output as JSON: {"response": "...", "explanation": "..."}.
 Do not add extra text.
 """
 
 # Process a single note
-def process_note(note_text: str, model: str = 'llama3') -> dict:
+def process_note(note_text: str, model: str, max_attempts: int = 2) -> dict:
     user_prompt = f"Does this note suggest pneumonia is a diagnosis? Note: {note_text}"
-    
-    response = client.chat(
-        model=model,
-        messages=[
-            {'role': 'system', 'content': SYSTEM_PROMPT},
-            {'role': 'user', 'content': user_prompt}
-        ]
-    )
-    
-    res_content = response['message']['content']
-    try:
-        res_dict = json.loads(res_content)  # Parse JSON
-        validated = LLMResponse(**res_dict)  # Validate with Pydantic
-        return validated.model_dump()
-    except (json.JSONDecodeError, ValidationError) as e:
-        print(f"Error processing note: {e}")
-        return {"response": "(3) Unable to say", "explanation": "LLM output invalid; retry needed."}  # Fallback
+	
+	def call_llm():
+		response = client.chat(
+			model=model,
+			messages=[
+				{'role': 'system', 'content': SYSTEM_PROMPT},
+				{'role': 'user', 'content': user_prompt}
+			]
+		)
+		return response['message']['content']
+		
+	attempts = 0 
+	while attempts < max_attempts:  # retry when validation fails
+		try:
+			res_content = call_llm()
+			res_dict = json.loads(res_content)  # Parse JSON
+			validated = LLMResponse(**res_dict)  # Validate with Pydantic
+			return validated.model_dump()
+		except (json.JSONDecodeError, ValidationError) as e:
+			attempts += 1
+			print(f"Attempt {attempts} failed: {e}")
+			if attempts < max_attempts:
+				print("Retrying once...")
+				
+    # Fallback if both attempts fail
+    return {
+        "response": "(4) LLM output invalid",
+        "explanation": "LLM output failed validation."
+    }
 ```
 
 - **Best Practices**:
   - **System Prompts**: Use 'system' role to set rules (e.g., output format), reducing hallucinations and ensuring structured responses.
-  - **Pydantic Validation**: Automatically checks types and structure; handle errors gracefully (e.g., retry up to 3 times).
+  - **Pydantic Validation**: Automatically checks types and structure; handle errors gracefully (e.g., retry up to max_attempts times).
   - **Error Handling**: Wrap in try-except for robustness. Log errors to stdout or a table.
   - **Model Selection**: Start with smaller models like `llama3` for speed; scale to larger for accuracy.
   - **Batching**: Process in loops over fetched batches to avoid timeouts.
@@ -238,8 +292,7 @@ def insert_results(results: List[dict]):
         cursor.execute("""
             INSERT INTO sspSB.PNA_Results (patientvisitid, accession, llm_response, llm_explanation, query_meta)
             VALUES (%s, %s, %s, %s, %s)
-        """, (res['patientvisitid'], res['accession'], res['response'], res['explanation'], 
-              'questionsPNAv1.1 on 2025-09-24'))  # Update meta as needed
+        """, (res['patientvisitid'], res['accession'], res['response'], res['explanation'], res['meta'])) 
     conn.commit()
     cursor.close()
     conn.close()
@@ -264,11 +317,12 @@ logging.basicConfig(
 
 # Record experiment metadata
 EXPERIMENT_META = {
-    "model": "llama3",
+    "model": MODEL,
     "system_prompt": SYSTEM_PROMPT.strip(),
     "batch_size": 100,
     "timestamp": datetime.now().isoformat(),
-    "ollama_host": OLLAMA_HOST
+    "ollama_host": OLLAMA_HOST,
+	"exp_name": EXP_NAME
 }
 logging.info(f"Experiment setup: {EXPERIMENT_META}")
 
@@ -282,10 +336,11 @@ for batch in fetch_notes(batch_size=EXPERIMENT_META["batch_size"]):
         res = process_note(note_text, model=EXPERIMENT_META["model"])
         res['patientvisitid'] = patientvisitid
         res['accession'] = accession
+		res['meta'] = EXPERIMENT_META["exp_name"]
         batch_results.append(res)
 
         # Log each processed note
-        logging.info(f"Processed note {accession} with response {res['response']}")
+        logging.info(f"Processed note {accession}")
 
     insert_results(batch_results)
     print(f"Processed batch of {len(batch)} notes.")
@@ -293,24 +348,13 @@ for batch in fetch_notes(batch_size=EXPERIMENT_META["batch_size"]):
 
 ---
 
-## 4. Additional Best Practices
-
-* Prompt engineering guidance
-* Retry/fallback for malformed JSON
-* Use environment variables for DB credentials
-* Parallelization with job arrays for very large datasets
-
----
-
-## 5. Cleanup
+## 4. Cleanup
 
 * Cancel Ollama job (`scancel -M gpu <JOBID>`)
-* Close DB connections
-* Remove unused models
 
 ---
 
-## 6. Troubleshooting
+## 5. Troubleshooting
 
 * **Ollama not responding**: Check with `squeue` and restart job
 * **GPU OOM**: Switch to smaller model or larger GPU node
@@ -318,64 +362,13 @@ for batch in fetch_notes(batch_size=EXPERIMENT_META["batch_size"]):
 
 ---
 
-## 7. Running as a Slurm Batch Job
-
-To avoid staying in Jupyter, wrap the Python script into an `sbatch` file.
-
-**Example: `run_llm_pipeline.slurm`**
-
-```bash
-#!/bin/bash
-#SBATCH --job-name=llm_pipeline
-#SBATCH --partition=gpu
-#SBATCH --gres=gpu:1
-#SBATCH --mem=125G
-#SBATCH --cpus-per-task=16
-#SBATCH --time=24:00:00
-#SBATCH --output=llm_pipeline_%j.out
-#SBATCH --error=llm_pipeline_%j.err
-
-# Load environment
-module load python/ondemand-jupyter-python3.11
-source activate /path/to/your/env
-
-# Start Ollama server in background
-module load singularity/4.3.2
-singularity exec /software/rhel9/manual/install/ollama/ollama-0.11.10.sif \
-    ollama serve --host 0.0.0.0:11434 &
-
-# Wait a few seconds for server to start
-sleep 10
-
-# Run the Python pipeline
-python run_llm_pipeline.py
-
-# Cleanup
-echo "Job completed at $(date)"
-```
-
-**Usage:**
-
-```bash
-sbatch run_llm_pipeline.slurm
-```
-
-* **Notes**:
-
-  * Update `python run_llm_pipeline.py` to point to your actual script.
-  * By default, Ollama listens on port `11434`. Update if you’re using a dynamic port.
-  * Log files (`.out`, `.err`, `.log`) provide an audit trail.
-
----
-
-
-# 7. Execution Options
+# 6. Execution Options [WORK IN PROGRESS]
 
 There are three common ways to run this workflow on Pitt CRC:
 
 ---
 
-## **7.1. Interactive Jupyter Notebook (OnDemand)**
+## **6.1. Interactive Jupyter Notebook (OnDemand)**
 
 This is the most user-friendly option for **testing, debugging, and prompt development**. You request an interactive GPU session, start an Ollama server, and run your code inside a Jupyter notebook.
 
@@ -417,7 +410,7 @@ This runs the entire pipeline **unattended** in a single job. You create a `.slu
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:1
 #SBATCH --mem=125G
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=8
 #SBATCH --time=24:00:00
 #SBATCH --output=llm_pipeline_%j.out
 #SBATCH --error=llm_pipeline_%j.err
@@ -447,53 +440,4 @@ sbatch run_llm_pipeline.slurm
 * You want reproducibility and logs.
 * The job can finish within the walltime (≤ 24h typical limit).
 * Best balance of ease and automation.
-
----
-
-## **7.3. Batch Job with Slurm Job Array (Parallelized)**
-
-A job array splits the workload into **independent parallel jobs**, each handling a subset of the dataset. This scales best for **millions of notes**.
-
-**Example: `run_llm_pipeline_array.slurm`**
-
-```bash
-#!/bin/bash
-#SBATCH --job-name=llm_array
-#SBATCH --partition=gpu
-#SBATCH --gres=gpu:1
-#SBATCH --mem=125G
-#SBATCH --cpus-per-task=16
-#SBATCH --time=24:00:00
-#SBATCH --array=0-9        # 10 jobs in the array
-#SBATCH --output=llm_array_%A_%a.out
-#SBATCH --error=llm_array_%A_%a.err
-
-module load python/ondemand-jupyter-python3.11
-source activate /path/to/your/env
-module load singularity/4.3.2
-
-# Start Ollama server in background
-singularity exec /software/rhel9/manual/install/ollama/ollama-0.11.10.sif \
-    ollama serve --host 0.0.0.0:11434 &
-sleep 10
-
-# Each job gets a different chunk of data
-CHUNK_SIZE=10000
-OFFSET=$((SLURM_ARRAY_TASK_ID * CHUNK_SIZE))
-
-python run_llm_pipeline.py --offset $OFFSET --limit $CHUNK_SIZE
-```
-
-Submit with:
-
-```bash
-sbatch run_llm_pipeline_array.slurm
-```
-
-**When to use:**
-
-* Very large runs (500,000–10,000,000+ notes).
-* Need to distribute across many GPUs in parallel.
-* Each array task independently processes a dataset chunk.
-* Useful if a single job would exceed walltime or memory.
 
