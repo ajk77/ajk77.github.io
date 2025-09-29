@@ -346,7 +346,8 @@ This is the most user-friendly option for **testing, debugging, and prompt devel
 **Steps:**
 
 1. Start Ollama server (see Section 3.1).
-2. Log into [OnDemand at Pitt CRC](https://ondemand.htc.crc.pitt.edu).
+2. Log into [OnDemand at Pitt CRC](https://ondemand.htc.crc.pitt.edu) and Launch a Jupyter notebook.
+* For Python version choose "Custom Conda Environment..." and type in the path to the environment you created in Section 2. 
 3. Edit the Python script to meet your experimental needs (see Section 3.2).
 4. Run the script.
 5. At job completion, cancel the Ollama server (see Section 4).
