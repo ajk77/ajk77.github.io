@@ -35,7 +35,7 @@ This SOP is based on guidance from Pitt CRCD's Ollama documentation ([CRCD Ollam
   module load python/ondemand-jupyter-python3.11
   conda create --prefix=/path/to/your/env python=3.11
   source activate /path/to/your/env
-  pip install ollama pymysql pydantic
+  pip install ollama pymysql pydantic jupyterlab dotenv
   conda deactivate
   ```
 
@@ -75,7 +75,7 @@ This SOP is based on guidance from Pitt CRCD's Ollama documentation ([CRCD Ollam
 
    This allocates 125GB RAM, 16 cores, and a GPU.
 
-2. Query the job to get the hostname and port (replace `$USER` with your username):
+2. Query the job to get the hostname and port:
 
    ```bash
    squeue -M gpu -u $USER
@@ -138,7 +138,7 @@ from pydantic import BaseModel, ValidationError
 import json
 import logging
 from datetime import datetime
-from typing import List
+from typing import Literal
 
 # Load environmental variables
 load_dotenv('/ihome/project_name/user_name/.env')  ## Update with path from Section 2.)
@@ -296,7 +296,6 @@ def main():
 			res['accession'] = accession
 			res['meta'] = EXPERIMENT_META["exp_name"]
 			batch_results.append(res)
-			logging.info(f"Processed note {accession}")
 		insert_results(batch_results)
 		print(f"Processed batch of {len(batch)} notes.")
 
