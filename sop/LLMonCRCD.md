@@ -148,12 +148,12 @@ DB_HOST = os.getenv("DB_HOST")
 DB_NAME = os.getenv("DB_NAME")
 
 # Ollama client setup
-OLLAMA_HOST = 'http://gpu-n57:48362'  # Replace with your active hostname:port
+OLLAMA_HOST = 'http://gpu-n57:48362'  ## Replace with your active hostname:port
 client = ollama.Client(host=OLLAMA_HOST)
 
 # Experiment Configureation
-EXP_NAME = 'questionsPNAv1.1 on 2025-09-24'
-MODEL = "llama3"
+EXP_NAME = 'questionsPNAv1.1 on 2025-09-24'  ## Replace with you experiment's name
+MODEL = "llama3"  ## Choose from your downloaded models from Section 3.1.
 
 # System prompt for consistent behavior
 SYSTEM_PROMPT = """
@@ -163,12 +163,12 @@ Provide a concise explanation. Output as JSON: {"response": "...", "explanation"
 Do not add extra text.
 """
 
-# Pydantic model for structured output (see Section 3.3.)
+# Pydantic model for structured output
 class LLMResponse(BaseModel):
 	response: Literal["(1) Likely", "(2) Unlikely", "(3) Unable to say"]
 	explanation: str  # Concise explanation
 
-# Database connection function (see Section 3.2.)
+# Database connection function
 def db_connect():
 	conn = pymysql.connect(
 		host=DB_HOST,
@@ -179,7 +179,7 @@ def db_connect():
 		local_infile=1)
 	return conn
 
-# Fetch unprocessed notes in batches (see Section 3.2) 
+# Fetch unprocessed notes in batches 
 def fetch_notes(batch_size: int = 100, query_meta: str = EXP_NAME):
 	conn = db_connect()
 	cursor = conn.cursor()
@@ -201,7 +201,7 @@ def fetch_notes(batch_size: int = 100, query_meta: str = EXP_NAME):
 	cursor.close()
 	conn.close()
 
-# Process a single note (see Section 3.4.)
+# Process a single note
 def process_note(note_text: str, model: str, max_attempts: int = 2) -> dict:
 	user_prompt = f"Does this note suggest pneumonia is a diagnosis? Note: {note_text}"
 	
@@ -251,7 +251,7 @@ def create_results_table():
 	cursor.close()
 	conn.close()
 
-# Insert batch results (see Section 3.5)
+# Insert batch results
 def insert_results(results: List[dict]):
 	conn = db_connect()
 	cursor = conn.cursor()
@@ -312,7 +312,7 @@ if __name__ == "__main__":
 * Desired model in `MODEL`
 * System prompt in `SYSTEM_PROMPT`
 * Pydantic object in `LLMResponse` to match your system prompt
-* Database query in `fetch_notes` to pull from your source database
+* Database query in `fetch_notes()` to pull from your source database
 * `user_prompt` and fallback response in `process_note()`
 * Results table creation script in `create_results_table()`
 * Insert query in `insert_results()`
@@ -321,7 +321,7 @@ if __name__ == "__main__":
 
 ## 4. Cleanup
 
-* Cancel Ollama job:
+* Cancel Ollama job (JOBID returned in first squeue command in Section 3.1):
 
   ```bash
   scancel -M gpu <JOBID>
