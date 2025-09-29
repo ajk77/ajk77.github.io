@@ -2,7 +2,7 @@
 
 ## 1. Purpose
 
-This Standard Operating Procedure (SOP) outlines the steps to process a large volume of clinical or textual notes through a LLM on the University of Pittsburgh's CRCD infrastructure. The process leverages Ollama for LLM inference on GPU nodes, connects to a MySQL database to fetch notes, processes them with structured prompts, and inserts results back into the database.
+This Standard Operating Procedure (SOP) outlines the steps to process clinical  notes through a LLM on the University of Pittsburgh's CRCD infrastructure. The process leverages Ollama for LLM inference on GPU nodes, connects to a MySQL database to fetch notes, processes them with structured prompts, and inserts results back into the database.
 
 This SOP is based on guidance from the Pitt CRCD's Ollama documentation ([CRCD Ollama](https://crc-pages.pitt.edu/user-manual/bioinformatics/ollama/)).
 
@@ -10,11 +10,10 @@ This SOP is based on guidance from the Pitt CRCD's Ollama documentation ([CRCD O
 * You have a Pitt CRCD account.
 * Notes are stored in a MySQL database (e.g., `sspSB.PNA2_100_RadNotes` in the example).
 * Data is already de-identified and compliant with institutional policies (e.g., HIPAA). 
-* Ollama server is version 0.1.10 or later, installed as a Singularity image.
 
 **Notes**:
-* Ollama is not yet avaliable on CRCD's Secure Resarch Environment (SRE). For more information on the management of Proteched Health Information (PHI), please see ([CRCD SRE] (https://crc-pages.pitt.edu/user-manual/getting-started/access_sre/)).
-* Additional guidance for use of Generative AI Tools outside of CRCD is provided by ([Pitt Digital GenAI] (https://www.digital.pitt.edu/acceptable-use-generative-artificial-intelligence-tools)).
+* Ollama is not yet avaliable on CRCD's Secure Resarch Environment (SRE). For more information, please see ([CRCD SRE](https://crc-pages.pitt.edu/user-manual/getting-started/access_sre/)).
+* Additional guidance for use of Generative AI Tools outside of CRCD is provided by ([Pitt Digital GenAI](https://www.digital.pitt.edu/acceptable-use-generative-artificial-intelligence-tools)).
 
 ---
 
@@ -22,11 +21,11 @@ This SOP is based on guidance from the Pitt CRCD's Ollama documentation ([CRCD O
 
 ### One-Time Setup
 
-* **Existing CRCD Resources****:
+* **Existing CRCD Resources**:
   * Python 3.11+ (via `module load python/ondemand-jupyter-python3.11`)
   * Current Ollama Singularity image: `/software/rhel9/manual/install/ollama/ollama-0.11.10.sif`
 
-* **Create a Virtual Enviroment****: Create a Conda environment with required packages (update "/path/to/your/env" to your project location):
+* **Create a Virtual Enviroment**: Create a Conda environment with required packages (update "/path/to/your/env" to your project location):
     ```bash
     module load python/ondemand-jupyter-python3.11
     conda create --prefix=/path/to/your/env python=3.11
@@ -35,7 +34,7 @@ This SOP is based on guidance from the Pitt CRCD's Ollama documentation ([CRCD O
     conda deactivate
     ```
 
-* **Database Access**: Obtain credentials for your projects MySQL database. Create a file called '.env' and save it to your CRCD home directory (/ihome/project_name/user_name/.env). The file should contain the following:
+* **Database Access**: Obtain credentials for your project's MySQL database. Create a file called '.env' and save it to your CRCD home directory (/ihome/project_name/user_name/.env). The file should contain the following:
 	```text
 	DB_USER=myuser
 	DB_PASS=mypassword
@@ -46,20 +45,18 @@ This SOP is based on guidance from the Pitt CRCD's Ollama documentation ([CRCD O
 	* To view file permissions use `ls -la`	
 	* To view file contents use `cat .env`
 
-* **Table Creation**: Create or confirm a results table (see Section 3.5).
-
 ---
 
-## 3. Step-by-Step Implementation in Python
+## 3. Implementation in Python
 
-### 3.1. Start the Ollama Server on a GPU Node
+### 3.1. First, Start the Ollama Server on a GPU Node
 1. Submit a Slurm job to run the Ollama server. Choose the appropriate template based on GPU Memory needs:
    * For L40S (48GB): `sbatch /software/rhel9/manual/install/ollama/ollama-0.11.10_l40s.slurm`
    * For A100 (80GB): `sbatch /software/rhel9/manual/install/ollama/ollama-0.11.10_a100_80gb.slurm`
    
    This allocates 125GB RAM, 16 cores, and a GPU.
 
-2. Query the job to get the hostname and port:
+2. Query the job to get the hostname and port (replace $USER with your username):
    ```bash
    squeue -M gpu -u $USER
    # Example output (with $USER replaced with ajk77): 
@@ -71,7 +68,7 @@ This SOP is based on guidance from the Pitt CRCD's Ollama documentation ([CRCD O
    # gpu-n57 48362
    ```
 
-3. Note the server URL: `http://<hostname>:<port>` (e.g., `http://gpu-n57:48362`).
+3. Note the server URL: `http://<hostname>:<port>` (e.g., `http://gpu-n57:48362`). These numbers will need to be updated in your python script everytime you start a new ollama server. 
 
 4. (Required the first time you use a model) Pull desired models (e.g., llama3):
    * Request an interactive SMP session: `srun -M smp -p smp -n4 --mem=16G -t0-01:00:00 --pty bash`
@@ -83,44 +80,29 @@ This SOP is based on guidance from the Pitt CRCD's Ollama documentation ([CRCD O
     ollama pull llama3
 	``` 
 	* Additional helpful commands within singularity shell:
-		* (1) To view downloaded models: `ollama list`
-		* (2) To directly interact with a model: `ollama run llama3`
-		* (3) To exit interaction: `/bye`
-		* (4) To exist singularity shell: `exit`
+		* To view downloaded models: `ollama list`
+		* To directly interact with a model: `ollama run llama3`
+		* To exit interaction: `/bye`
+		* To exist singularity shell: `exit`
      
 	* **Note on Models**:
-		* This example uses llama3 as the model. A full list of models avaliable within CRCD's current singularity image is provided here: ([Ollama v0.11.10] (https://github.com/ollama/ollama/tree/v0.11.10?tab=readme-ov-file#model-library)).
+		* This example uses llama3 as the model. A full list of models avaliable within CRCD's current singularity image is provided here: ([Ollama v0.11.10](https://github.com/ollama/ollama/tree/v0.11.10?tab=readme-ov-file#model-library)).
 		* Model install will fail if you exceed your 75GB allowance in ~/.ollama
-		* To remove a model (e.g., llama3), use : `ollama rm llama3`
+		* To remove a model (e.g., llama3), use `ollama rm llama3` within the sigularity shell.
+		
+### 3.2. Second, Customize the Python Script
 
-### 3.2. Connect to the Database and Fetch Notes
-Use `pymysql` to connect and fetch notes in batches to handle large datasets efficiently.
-
-	* **Best Practice**: Fetch in batches (e.g., 100 notes) to manage memory and allow checkpointing (e.g., commit after each batch).
-
-### 3.3. Define Structured Output with Pydantic
-Use Pydantic to enforce a schema for LLM responses, ensuring consistency and validation.
-
-	* **Best Practice**: This prevents malformed JSON from the LLM. Validate responses and handle errors (e.g., retry on failure).
-
-### 3.4. Process Notes with LLM Using System Prompts
-Connect to the Ollama server and process each note. Use a system prompt for consistent behavior.
-
-	* **Best Practices**:
-	  * **System Prompts**: Use 'system' role to set rules (e.g., output format), reducing hallucinations and ensuring structured responses.
-	  * **Pydantic Validation**: Automatically checks types and structure; handle errors gracefully (e.g., retry up to max_attempts times).
-	  * **Error Handling**: Wrap in try-except for robustness. Log errors to stdout or a table.
-	  * **Model Selection**: Start with smaller models like `llama3` for speed; scale to larger for accuracy.
-	  * **Batching**: Process in loops over fetched batches to avoid timeouts.
-
-### 3.5. Insert Results Back into the Database
-Create or use a results table (e.g., `sspSB.PNA_Results`) with columns: `patientvisitid`, `accession`, `llm_response`, `llm_explanation`, `query_meta`.
-
-	* **Best Practice**: Use parameterized queries to prevent SQL injection. Commit after each batch for atomicity.
-
----
-
-### 3.6. Main Processing Loop with Experiment Logging
+	* **Details to update include**:
+		* the path passed into load_dotenv()
+		* the hostname and port of your active Ollama node in OLLAMA_HOST
+		* the experiment's name in EXP_NAME
+		* the desired model in Model
+		* the system prompt in SYSTEM_PROMPT
+		* the Pydantic object defined in LLMResponse to match your system prompt
+		* the database query in fetch_notes to pull from your source database
+		* the user_prompt and fallback response in process_note())
+		* the results table creation script in create_results_table()
+		* the insert querey in insert_results ()
 
 ```python
 from dotenv import load_dotenv
@@ -322,19 +304,20 @@ This is the most user-friendly option for **testing, debugging, and prompt devel
 
 **Steps:**
 
-1. In terminal, request an interactive GPU session (see Section 3.1).
-2. Log into [OnDemand at Pitt CRC](https://ondemand.htc.crc.pitt.edu).
-3. Copy the python code into your notebook. 
-4. Update:
-	* the path passed into load_dotenv()
-	* the hostname and port of your active Ollama node in OLLAMA_HOST
-	* the experiment's name in EXP_NAME
-	* the desired model in Model
-	* the system prompt in SYSTEM_PROMPT
-	* the Pydantic object defined in LLMResponse to match your system prompt
-	* the database query in fetch_notes to pull from your source database
-	* the user_prompt and fallback response in process_note())
-	* the results table creation script in create_results_table()
-	* the insert querey in insert_results ()
-5. Run the notebook.
+1. In terminal, request an interactive GPU session (see Section 3.1)
+2. Log into [OnDemand at Pitt CRC](https://ondemand.htc.crc.pitt.edu)
+3. Edit the python script to meet your expeimental needs (see Section 3.2)
+4. Run the script
+5. At job completion, cancel the ollama job (see Section 4.)
 
+
+## **6.2. Process job in terminal with sbatch**
+
+
+**Steps:**
+
+1. In terminal, request an interactive GPU session (see Section 3.1)
+2. Edit the python script to meet your expeimental needs (see Section 3.2)
+3. Create a bash script for the job [An example will be added here in the future]
+4. Run the bash script
+5. At job completion, cancel the ollama job (see Section 4.)
