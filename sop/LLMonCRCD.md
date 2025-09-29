@@ -91,18 +91,6 @@ This SOP is based on guidance from the Pitt CRCD's Ollama documentation ([CRCD O
 		* To remove a model (e.g., llama3), use `ollama rm llama3` within the sigularity shell.
 		
 ### 3.2. Second, Customize the Python Script
-	**Details to update include**:
-	* the path passed into load_dotenv()
-	* the hostname and port of your active Ollama node in OLLAMA_HOST
-	* the experiment's name in EXP_NAME
-	* the desired model in Model
-	* the system prompt in SYSTEM_PROMPT
-	* the Pydantic object defined in LLMResponse to match your system prompt
-	* the database query in fetch_notes to pull from your source database
-	* the user_prompt and fallback response in process_note())
-	* the results table creation script in create_results_table()
-	* the insert querey in insert_results ()
-
 	```python
 	from dotenv import load_dotenv
 	import pymysql
@@ -278,6 +266,18 @@ This SOP is based on guidance from the Pitt CRCD's Ollama documentation ([CRCD O
 		main()
 
 	```
+
+	**Details to update include**:
+	* the path passed into load_dotenv()
+	* the hostname and port of your active Ollama server in OLLAMA_HOST
+	* the experiment's name in EXP_NAME
+	* the desired model in Model
+	* the system prompt in SYSTEM_PROMPT
+	* the Pydantic object defined in LLMResponse to match your system prompt
+	* the database query in fetch_notes to pull from your source database
+	* the user_prompt and fallback response in process_note()
+	* the results table creation script in create_results_table()
+	* the insert querey in insert_results ()
 
 ---
 
